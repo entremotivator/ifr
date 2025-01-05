@@ -37,7 +37,64 @@ def make_api_request(method, endpoint, data=None, params=None):
     return response
 
 # Existing API functions remain the same...
-[Previous API functions here...]
+def get_workflows():
+    """Fetch all workflows"""
+    response = make_api_request('GET', 'workflows')
+    return response.json() if response.status_code == 200 else None
+
+def get_workflow_executions(workflow_id, limit=100):
+    """Fetch execution history for a workflow"""
+    params = {'limit': limit}
+    response = make_api_request('GET', f'workflows/{workflow_id}/executions', params=params)
+    return response.json() if response.status_code == 200 else None
+
+def execute_workflow(workflow_id, data=None):
+    """Trigger workflow execution"""
+    response = make_api_request('POST', f'workflows/{workflow_id}/execute', data=data)
+    return response.status_code == 200
+
+def get_tags():
+    """Fetch all tags"""
+    response = make_api_request('GET', 'tags')
+    return response.json() if response.status_code == 200 else None
+
+def create_tag(tag_name):
+    """Create a new tag"""
+    data = {'name': tag_name}
+    response = make_api_request('POST', 'tags', data=data)
+    return response.status_code == 200
+
+def get_credentials():
+    """Fetch credentials list (names only)"""
+    response = make_api_request('GET', 'credentials')
+    return response.json() if response.status_code == 200 else None
+
+def get_active_workflows():
+    """Get all active workflows"""
+    response = make_api_request('GET', 'workflows/active')
+    return response.json() if response.status_code == 200 else None
+
+def activate_workflow(workflow_id, active=True):
+    """Activate or deactivate a workflow"""
+    data = {'active': active}
+    response = make_api_request('PATCH', f'workflows/{workflow_id}', data=data)
+    return response.status_code == 200
+
+def get_workflow_metrics(workflow_id):
+    """Get execution metrics for a workflow"""
+    executions = get_workflow_executions(workflow_id)
+    if not executions:
+        return None
+    
+    success_count = sum(1 for e in executions if e.get('finished') and e.get('status') == 'success')
+    failure_count = sum(1 for e in executions if e.get('finished') and e.get('status') == 'error')
+    
+    return {
+        'total_executions': len(executions),
+        'success_rate': (success_count / len(executions)) * 100 if executions else 0,
+        'failure_rate': (failure_count / len(executions)) * 100 if executions else 0,
+    }
+
 
 # New Visualization Functions
 def create_execution_timeline(executions):
