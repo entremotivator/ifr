@@ -228,10 +228,48 @@ def main():
     workflows = get_workflows()
     
     with tabs[0]:  # Workflows tab remains the same...
-        [Previous workflows tab code here...]
-
+        st.header("Workflow Management")
+        workflows = get_workflows()
+        if workflows:
+            for workflow in workflows:
+                with st.expander(f"{workflow['name']} (ID: {workflow['id']})"):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write(f"Active: {'✅' if workflow['active'] else '❌'}")
+                        if st.button(
+                            "Toggle Active Status", 
+                            key=f"toggle_{workflow['id']}"
+                        ):
+                            if activate_workflow(workflow['id'], not workflow['active']):
+                                st.success("Status updated!")
+                                st.experimental_rerun()
+                    
+                    with col2:
+                        if st.button(
+                            "Execute Workflow", 
+                            key=f"execute_{workflow['id']}"
+                        ):
+                            if execute_workflow(workflow['id']):
+                                st.success("Workflow executed!")
     with tabs[1]:  # Executions tab remains the same...
-        [Previous executions tab code here...]
+        st.header("Execution History")
+        selected_workflow = st.selectbox(
+            "Select Workflow",
+            options=[w['name'] for w in workflows],
+            key="execution_workflow_selector"
+        )
+        workflow_id = next(w['id'] for w in workflows if w['name'] == selected_workflow)
+        executions = get_workflow_executions(workflow_id)
+        
+        if executions:
+            df = pd.DataFrame([{
+                'Started': datetime.fromisoformat(e['startedAt'].replace('Z', '+00:00')),
+                'Status': e['status'],
+                'Duration': e.get('stoppedAt', None) and 
+                    (datetime.fromisoformat(e['stoppedAt'].replace('Z', '+00:00')) - 
+                     datetime.fromisoformat(e['startedAt'].replace('Z', '+00:00'))).seconds
+            } for e in executions])
+            st.dataframe(df)
 
     with tabs[2]:  # Advanced Metrics
         st.header("Advanced Workflow Metrics")
