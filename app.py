@@ -203,7 +203,20 @@ def main():
     st.set_page_config(page_title="N8N Workflow Manager", layout="wide")
     
     # Authentication code remains the same...
-    [Previous authentication code here...]
+    if 'authenticated' not in st.session_state:
+        st.session_state.authenticated = False
+
+    if not st.session_state.authenticated:
+        with st.form("login_form"):
+            username = st.text_input("Username")
+            password = st.text_input("Password", type="password")
+            if st.form_submit_button("Login"):
+                if username == N8N_API_USER and password == N8N_API_PASS:
+                    st.session_state.authenticated = True
+                    st.experimental_rerun()
+                else:
+                    st.error("Invalid credentials")
+        return
 
     st.title("N8N Workflow Manager")
     
