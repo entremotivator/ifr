@@ -4,8 +4,6 @@ import json
 import os
 from datetime import datetime, timedelta
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
 from io import BytesIO
 import base64
 import zipfile
