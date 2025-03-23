@@ -7,7 +7,6 @@ import pandas as pd
 from io import BytesIO
 import base64
 import zipfile # Import missing library
-import plotly.graph_objects as go # Import missing library
 import urllib3
 
 # Suppress only the single InsecureRequestWarning from urllib3 needed for verify=False
