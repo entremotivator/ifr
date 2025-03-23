@@ -240,7 +240,7 @@ def main():
                         ):
                             if activate_workflow(workflow['id'], not workflow['active']):
                                 st.success("Status updated!")
-                                st.experimental_rerun()
+                                st.rerun()
                     
                     with col2:
                         if st.button(
