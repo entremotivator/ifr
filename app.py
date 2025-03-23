@@ -7,7 +7,7 @@ import pandas as pd
 from io import BytesIO
 import base64
 import zipfile
-import plotly.express as px  # Import missing library
+import plotly.express   # Import missing library
 import plotly.graph_objects as go # Import missing library
 import urllib3
 
